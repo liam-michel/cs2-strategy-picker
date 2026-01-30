@@ -1,8 +1,21 @@
 {
-  "dependencies": {
-    "pino": "^10.3.0"
+  "name": "my-project",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "db:migrate": "npm run db:migrate -w apps/backend",
+    "db:studio": "npm run db:studio -w apps/backend"
   },
   "devDependencies": {
-    "turbo": "^2.8.0"
+    "turbo": "^2.8.0",
+    "typescript": "^5.3.0"
   }
 }
