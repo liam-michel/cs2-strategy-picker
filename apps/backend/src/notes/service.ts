@@ -1,4 +1,5 @@
 import { createNotesStorage } from './storage.js';
+import type { Logger } from 'pino';
 import type { Storage } from './storage.js';
 import type {
   NoteCreateInput,
@@ -6,6 +7,11 @@ import type {
   PaginationInput,
 } from '../common/schemas.js';
 import { Note } from '@prisma/client';
+
+export type NotesServiceDeps = {
+  storage: Storage;
+  logger: Logger;
+};
 
 export type NotesService = {
   getAllNotes: () => ReturnType<Storage['notes']['getAllNotes']>;
@@ -18,41 +24,45 @@ export type NotesService = {
   ) => ReturnType<Storage['notes']['getNotesPaginated']>;
 };
 
-function getAllNotes(storage: Storage) {
+function getAllNotes({ storage, logger }: NotesServiceDeps) {
   return async function (): Promise<Note[]> {
+    logger.info('Fetching all notes');
     return await storage.notes.getAllNotes();
   };
 }
 
-function createNote(storage: Storage) {
+function createNote({ storage, logger }: NotesServiceDeps) {
   return async function (data: NoteCreateInput) {
+    logger.info('Creating a new note with data: %o', data);
     const note = await storage.notes.createNote(data);
     // future business logic here
     return note; // TypeScript infers Promise<Note>
   };
 }
 
-function getNotesPaginated(storage: Storage) {
+function getNotesPaginated({ storage, logger }: NotesServiceDeps) {
   return async function (data: PaginationInput) {
+    logger.info('Fetching paginated notes with data: %o', data);
     const notes = await storage.notes.getNotesPaginated(data);
     // future business logic here
     return notes;
   };
 }
 
-function deleteNote(storage: Storage) {
+function deleteNote({ storage, logger }: NotesServiceDeps) {
   return async function (data: IdInput): Promise<string> {
+    logger.info('Deleting a note with id: %o', data);
     return await storage.notes.deleteNote(data);
   };
 }
 
-export async function createNotesService(deps: Storage): Promise<NotesService> {
-  const storage = deps;
-
+export async function createNotesService(
+  deps: NotesServiceDeps,
+): Promise<NotesService> {
   return {
-    getAllNotes: getAllNotes(storage),
-    createNote: createNote(storage),
-    deleteNote: deleteNote(storage),
-    getNotesPaginated: getNotesPaginated(storage),
+    getAllNotes: getAllNotes(deps),
+    createNote: createNote(deps),
+    deleteNote: deleteNote(deps),
+    getNotesPaginated: getNotesPaginated(deps),
   };
 }

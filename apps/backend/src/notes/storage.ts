@@ -1,13 +1,12 @@
-import { Note, type PrismaClient } from '@prisma/client';
-import { prisma } from '../utils/prisma.js';
-
+import { Note } from '@prisma/client';
+import { PrismaClient, type Prisma } from '@prisma/client';
 import {
   IdInput,
   NoteCreateInput,
   PaginationInput,
 } from '../common/schemas.js';
 
-type DbClient = Pick<PrismaClient, 'note'>;
+type DbClient = PrismaClient | Prisma.TransactionClient;
 export type NotesMethods = {
   getAllNotes: () => Promise<Note[]>;
   createNote: (data: NoteCreateInput) => Promise<Note>;
@@ -56,6 +55,10 @@ function getNotesPaginated(db: DbClient) {
     });
   };
 }
+export function createPrismaClient(connectionString: string) {
+  process.env.DATABASE_URL = connectionString; // inject env var dynamically
+  return new PrismaClient(); // no options needed
+}
 
 function wrapDb(db: DbClient): Omit<Storage, 'transaction'> {
   return {
@@ -68,11 +71,11 @@ function wrapDb(db: DbClient): Omit<Storage, 'transaction'> {
   };
 }
 
-export async function createNotesStorage(): Promise<Storage> {
+export async function createNotesStorage(db: PrismaClient): Promise<Storage> {
   return {
-    ...wrapDb(prisma),
+    ...wrapDb(db),
     async transaction(callback) {
-      return prisma.$transaction(async (tx) => {
+      return db.$transaction(async (tx) => {
         const repo = wrapDb(tx);
         return callback(repo);
       });
