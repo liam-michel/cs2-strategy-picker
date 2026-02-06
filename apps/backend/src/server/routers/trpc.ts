@@ -1,9 +1,32 @@
 import { initTRPC } from '@trpc/server'
 
+import { DomainError } from '../../common/error/errors'
 import type { AppContext } from '../context'
 
 export function createTRPCRouter() {
-  const t = initTRPC.context<AppContext>().create()
+  const t = initTRPC.context<AppContext>().create({
+    errorFormatter({ shape, error }) {
+      const originalError = error.cause?.cause || error.cause
+      if (originalError instanceof DomainError) {
+        return {
+          ...shape,
+          data: {
+            ...shape.data,
+            code: originalError.code,
+            message: originalError.message,
+            stack: process.env.NODE_ENV === 'development' ? originalError.stack : undefined,
+          },
+        }
+      }
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        },
+      }
+    },
+  })
 
   const isAuthed = t.middleware(({ ctx, next }) => {
     if (!ctx.user) {
@@ -32,7 +55,7 @@ export function createTRPCRouter() {
   const adminProcedure = t.procedure.use(isAuthed).use(isAdmin)
 
   return {
-    router: t,
+    router: t.router,
     protectedProcedure,
     adminProcedure,
   }
