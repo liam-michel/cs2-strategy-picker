@@ -3,9 +3,8 @@
 import pino from 'pino'
 
 import { createUseCaseExecutor } from './common/error/error-utils.js'
-import { createNotesUseCases } from './notes/notes.application.js'
-import { createNotesRouter } from './server/routers/notes.js'
 import { createTRPCRouter } from './server/routers/trpc.js'
+import { createStrategyRouter } from './services/strategy/strategy.router.js'
 import { createPrismaClient } from './storage/db-client.js'
 import { createStorage } from './storage/storage.js'
 
@@ -20,17 +19,20 @@ export async function setupApp() {
   const storage = createStorage(dbClient)
   //use-case executor, to be used by all use-cases for consistent error handling
   const executor = createUseCaseExecutor({ logger })
-  //notes use-case (to be used by TRPC router, and othes potentially)
-  const notesUseCases = createNotesUseCases({ storage: storage, logger })
-  //notes router, to be used in main app rotuer
-  const notesRouter = createNotesRouter({ t, notesUseCases, executor })
+
+  //strategy router
+  const strategyRouter = createStrategyRouter({
+    t,
+    executor,
+  })
 
   const appRouter = t.router({
-    notes: notesRouter,
+    strategy: strategyRouter,
   })
   return {
     t,
     logger,
+    storage,
     appRouter,
   }
 }

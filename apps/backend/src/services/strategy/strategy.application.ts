@@ -5,12 +5,14 @@ import { Storage } from '../../storage/storage'
 import type { AddStrategyInput } from './schemas'
 import { createStrategyService } from './strategy.service'
 
-type Deps = {
+type StrategyUseCaseDeps = {
   storage: Storage
   logger: Logger
 }
 
-export function createStrategyUseCases({ logger, storage }: Deps) {
+export type StrategyUseCases = ReturnType<typeof createStrategyUseCases>
+
+export function createStrategyUseCases({ logger, storage }: StrategyUseCaseDeps) {
   return {
     createStrategy: async (data: AddStrategyInput) => {
       logger.info('Use case: Creating strategy with data: %o', data)

@@ -1,24 +1,25 @@
 import type { Logger } from 'pino'
 
 import { IdInput } from '../../common/schemas'
-import { Storage } from '../../storage/storage'
+import { Repo } from '../../storage/storage'
 import { AddStrategyInput } from './schemas'
 
 export type StrategyServiceDeps = {
-  storage: Storage
+  storage: Repo
   logger: Logger
 }
 
 export type StrategyService = {
-  createStrategy: (data: AddStrategyInput) => ReturnType<Storage['strategy']['createStrategy']>
-  softDeleteStrategy: (data: IdInput) => ReturnType<Storage['strategy']['softDeleteStrategy']>
-  deleteStrategy: (data: IdInput) => ReturnType<Storage['strategy']['deleteStrategy']>
+  createStrategy: (data: AddStrategyInput) => ReturnType<Repo['strategy']['createStrategy']>
+  softDeleteStrategy: (data: IdInput) => ReturnType<Repo['strategy']['softDeleteStrategy']>
+  deleteStrategy: (data: IdInput) => ReturnType<Repo['strategy']['deleteStrategy']>
 }
 
 function createStrategy({ storage, logger }: StrategyServiceDeps) {
   return async function (data: AddStrategyInput) {
     logger.info('Creating a new strategy with data: %o', data)
     const strategy = await storage.strategy.createStrategy(data)
+
     // future business logic here
     return strategy
   }

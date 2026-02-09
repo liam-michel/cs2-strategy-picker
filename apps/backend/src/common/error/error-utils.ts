@@ -5,6 +5,8 @@ type UseCaseExecutorDeps = {
   logger: Logger
 }
 
+export type UseCaseExecutor = ReturnType<typeof createUseCaseExecutor>
+
 export function createUseCaseExecutor({ logger }: UseCaseExecutorDeps) {
   return {
     execute: async function <TOutput>(name: string, useCasePromise: Promise<TOutput>): Promise<TOutput> {

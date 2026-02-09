@@ -7,6 +7,8 @@ export type Storage = Readonly<{
   transaction: <T>(callback: (repo: Readonly<Omit<Storage, 'transaction'>>) => Promise<T>) => Promise<T>
 }>
 
+export type Repo = Readonly<Omit<Storage, 'transaction'>>
+
 function wrapDb(db: DbClient): Omit<Storage, 'transaction'> {
   return {
     strategy: createStrategyStorage(db),

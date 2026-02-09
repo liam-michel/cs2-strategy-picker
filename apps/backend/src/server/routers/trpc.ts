@@ -3,6 +3,8 @@ import { initTRPC } from '@trpc/server'
 import { DomainError } from '../../common/error/errors'
 import type { AppContext } from '../context'
 
+export type createTRPCRouterReturn = ReturnType<typeof createTRPCRouter>
+
 export function createTRPCRouter() {
   const t = initTRPC.context<AppContext>().create({
     errorFormatter({ shape, error }) {

@@ -4,16 +4,11 @@ import { IdInput } from '../../common/schemas'
 import type { DbClient } from '../../storage/types'
 import { AddStrategyInput } from './schemas'
 
-export type StrategyMethods = {
+export type StrategyStorageMethods = {
   createStrategy: (data: AddStrategyInput) => Promise<Strategy>
   softDeleteStrategy: (data: IdInput) => Promise<string>
   deleteStrategy: (data: IdInput) => Promise<string>
 }
-
-export type StrategyStorage = Readonly<{
-  strategy: StrategyMethods
-  transaction: <T>(callback: (repo: Readonly<Omit<StrategyStorage, 'transaction'>>) => Promise<T>) => Promise<T>
-}>
 
 function createStrategy(db: DbClient) {
   return async function (data: AddStrategyInput): Promise<Strategy> {
@@ -57,7 +52,7 @@ function deleteStrategy(db: DbClient) {
   }
 }
 
-export function createStrategyStorage(db: DbClient): StrategyMethods {
+export function createStrategyStorage(db: DbClient): StrategyStorageMethods {
   return {
     createStrategy: createStrategy(db),
     softDeleteStrategy: softDeleteStrategy(db),

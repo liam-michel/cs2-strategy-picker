@@ -42,3 +42,4 @@ export type Economy = z.output<typeof EconomySchema>
 export type PlayerRole = z.output<typeof PlayerRoleSchema>
 export type Utility = z.output<typeof UtilitySchema>
 export type UserRole = z.output<typeof UserRoleSchema>
+export type Map = z.output<typeof MapSchema>
