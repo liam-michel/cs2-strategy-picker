@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "cs2monorepo",
   "private": true,
   "workspaces": [
     "apps/*",

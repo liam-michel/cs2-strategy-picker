@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { EconomySchema, SideSchema } from '../../common/schemas'
+import { EconomySchema, SideSchema } from '../schemas/common'
 
 export const AddStrategySchema = z.object({
   name: z.string().min(1, 'Strategy name is required').max(50, 'Strategy name must be at most 50 characters long'),

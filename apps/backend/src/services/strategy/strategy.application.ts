@@ -1,8 +1,7 @@
+import type { AddStrategyInput, IdInput } from '@cs2monorepo/shared'
 import type { Logger } from 'pino'
 
-import type { IdInput } from '../../common/schemas'
 import { Storage } from '../../storage/storage'
-import type { AddStrategyInput } from './schemas'
 import { createStrategyService } from './strategy.service'
 
 type StrategyUseCaseDeps = {

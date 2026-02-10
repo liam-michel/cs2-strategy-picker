@@ -1,8 +1,7 @@
+import { AddStrategyInput, IdInput } from '@cs2monorepo/shared'
 import { Strategy } from '@prisma/client'
 
-import { IdInput } from '../../common/schemas'
 import type { DbClient } from '../../storage/types'
-import { AddStrategyInput } from './schemas'
 
 export type StrategyStorageMethods = {
   createStrategy: (data: AddStrategyInput) => Promise<Strategy>

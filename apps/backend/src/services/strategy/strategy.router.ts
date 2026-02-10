@@ -1,8 +1,8 @@
-import type { UseCaseExecutor } from '../../common/error/error-utils'
-import { IdSchema } from '../../common/schemas'
-import type { createTRPCRouterReturn } from '../../server/routers/trpc'
-import { AddStrategySchema } from '../../services/strategy/schemas'
+import { IdSchema } from '@cs2monorepo/shared'
+import { AddStrategySchema } from '@cs2monorepo/shared'
 
+import type { UseCaseExecutor } from '../../common/error/error-utils'
+import type { createTRPCRouterReturn } from '../../server/routers/trpc'
 type StrategyRouterDeps = {
   t: createTRPCRouterReturn
   executor: UseCaseExecutor
