@@ -2,6 +2,7 @@
 
 import pino from 'pino'
 
+import { createBetterAuthSingleton } from './server/auth.js'
 import { createTRPCRouter } from './server/routers/trpc.js'
 import { createStrategyRouter } from './services/strategy/strategy.router.js'
 import { createPrismaClient } from './storage/db-client.js'
@@ -15,6 +16,8 @@ export async function setupApp() {
   const logger = pino({ level: 'info' })
   //database client
   const dbClient = createPrismaClient('postgresql://invalid:invalid@localhost:5432/invalid')
+  //declare better-auth singleton
+  const auth = createBetterAuthSingleton({db: dbClient})
   //storage object initialized
   const storage = createStorage(dbClient)
   //use-case executor, to be used by all use-cases for consistent error handling
@@ -32,5 +35,6 @@ export async function setupApp() {
     logger,
     storage,
     appRouter,
+    auth
   }
 }

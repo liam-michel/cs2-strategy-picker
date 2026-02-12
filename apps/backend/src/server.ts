@@ -7,7 +7,7 @@ import { authPlugin } from './server/auth-plugin.js'
 import { createContext } from './server/context.js'
 async function main() {
   //application dependencies (long lived singletons) are created in the composition root
-  const { appRouter, logger, storage } = await setupApp()
+  const { appRouter, logger, storage , auth} = await setupApp()
 
   logger.info('App setup complete. Ready to start the server.')
   //initalise fastify server and register plugins

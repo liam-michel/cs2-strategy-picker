@@ -35,8 +35,7 @@ enum PlayerRole {
   IGL
 }
 
-
-enum UtilityType{
+enum UtilityType {
   SMOKE
   FLASH
   HE_GRENADE
@@ -51,82 +50,124 @@ enum UserRole {
 }
 
 model Map {
-  id       String   @id @default(cuid())  
-  name    String   @unique
+  id         String     @id @default(cuid())
+  name       String     @unique
   strategies Strategy[]
 }
 
-
-
 model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  name          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+
+  // Your custom fields
+  username        String            @unique
+  role     UserRole @default(USER)  // Use the enum instead of String
+  StrategyComment StrategyComment[]
+}
+
+model Session {
   id        String   @id @default(cuid())
-  email     String   @unique
-  username String @unique
-  password  String
-  role      UserRole     @default(USER)
-  comments StrategyComment[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id           String    @id @default(cuid())
+  userId       String
+  accountId    String
+  providerId   String
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+  password     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  @@unique([identifier, value])
 }
 
 model Utility {
-  id        String   @id @default(cuid())
+  id         String      @id @default(cuid())
   strategyId String
-  strategy   Strategy @relation(fields: [strategyId], references: [id])
-  type UtilityType
-  location String?
-  timing String?
-  order Int?
+  strategy   Strategy    @relation(fields: [strategyId], references: [id])
+  type       UtilityType
+  location   String?
+  timing     String?
+  order      Int?
 
-  role PlayerRole?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      PlayerRole?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model Strategy {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
   description String
 
-  side        Side
-  difficulty  Int      @default(3)
+  side       Side
+  difficulty Int  @default(3)
 
-  mapId       String
-  map         Map      @relation(fields: [mapId], references: [id])
-  comments    StrategyComment[]
+  mapId    String
+  map      Map               @relation(fields: [mapId], references: [id])
+  comments StrategyComment[]
 
-  economies   StrategyEconomy[]
-  utilities   Utility[]
+  economies StrategyEconomy[]
+  utilities Utility[]
 
-  ratingAverage Float   @default(0)
-  ratingCount  Int     @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt DateTime? 
+  ratingAverage Float     @default(0)
+  ratingCount   Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
 
   @@index([mapId, side])
 }
 
-
 model StrategyEconomy {
   strategyId String
-  economy Economy
-  strategy Strategy @relation(fields: [strategyId], references: [id])
-  @@id([strategyId, economy]) 
+  economy    Economy
+  strategy   Strategy @relation(fields: [strategyId], references: [id])
+
+  @@id([strategyId, economy])
   @@index([economy])
 }
 
-model StrategyComment { 
-  id String @id @default(cuid())
+model StrategyComment {
+  id         String   @id @default(cuid())
   strategyId String
-  strategy Strategy @relation(fields: [strategyId], references: [id])
-  userId String?
-  user User? @relation(fields: [userId], references: [id])
+  strategy   Strategy @relation(fields: [strategyId], references: [id])
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
 
-  content String
-  rating Int?
+  content   String
+  rating    Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([strategyId])
-  
 }

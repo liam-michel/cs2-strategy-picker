@@ -4,7 +4,7 @@ import type { Logger } from 'pino'
 import type { SafeUser } from '../common/schemas/user'
 import type { Storage } from '../storage/storage'
 import { toHeaders } from '../utils/headers'
-import { auth } from './auth'
+import type { BetterAuth } from './auth'
 declare module 'fastify' {
   interface FastifyRequest {
     authUser: SafeUser | null
@@ -12,9 +12,9 @@ declare module 'fastify' {
   }
 }
 
-export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger }> = async (
+export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger, betterAuth: BetterAuth }> = async (
   fastify,
-  { storage, logger },
+  { storage, logger, betterAuth },
 ) => {
   fastify.addHook('onRequest', async (request) => {
     request.requestLogger = logger.child({
@@ -26,7 +26,7 @@ export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger }
   fastify.addHook('preHandler', async (request) => {
     //default user to null
     request.authUser = null
-    const session = await auth.api.getSession({
+    const session = await betterAuth.api.getSession({
       headers: toHeaders(request.headers),
     })
 
