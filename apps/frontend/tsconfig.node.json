@@ -6,6 +6,7 @@
     "module": "ESNext",
     "types": ["node"],
     "skipLibCheck": true,
+    "composite": true, // Add this
 
     /* Bundler mode */
     "moduleResolution": "bundler",

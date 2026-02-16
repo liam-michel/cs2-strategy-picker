@@ -12,7 +12,7 @@ declare module 'fastify' {
   }
 }
 
-export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger, betterAuth: BetterAuth }> = async (
+export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger; betterAuth: BetterAuth }> = async (
   fastify,
   { storage, logger, betterAuth },
 ) => {
@@ -44,5 +44,70 @@ export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger, 
       role: dbUser.role,
     }
     request.requestLogger = request.requestLogger.child({ userId: dbUser.id })
+  })
+  fastify.all('/api/auth/*', async (request, reply) => {
+    // Extract the auth action from the URL
+    // URL format: /api/auth/{action}/{provider} or /api/auth/{action}
+    const urlParts = request.url.split('/')
+    const authAction = urlParts[3] // e.g., 'sign-in', 'sign-up', 'sign-out'
+    const authProvider = urlParts[4] // e.g., 'email', 'google' (optional)
+
+    const actionWithProvider = authProvider ? `${authAction}/${authProvider}` : authAction
+    request.requestLogger.info(
+      {
+        action: authAction,
+        provider: authProvider,
+        url: request.url,
+      },
+      `Auth request: ${actionWithProvider}`,
+    )
+
+    try {
+      // Construct request URL
+      const url = new URL(request.url, `http://${request.headers.host}`)
+
+      // Convert Fastify headers to standard Headers object
+      const headers = new Headers()
+      Object.entries(request.headers).forEach(([key, value]) => {
+        if (value) headers.append(key, value.toString())
+      })
+
+      // Create Fetch API-compatible request
+      const req = new Request(url.toString(), {
+        method: request.method,
+        headers,
+        ...(request.body ? { body: JSON.stringify(request.body) } : {}),
+      })
+
+      // Process authentication request
+      const response = await betterAuth.handler(req)
+
+      // Log the result
+      if (response.status >= 200 && response.status < 300) {
+        request.requestLogger.info(
+          { action: authAction, provider: authProvider, status: response.status },
+          `Auth ${authAction} successful`,
+        )
+      } else {
+        request.requestLogger.warn(
+          { action: authAction, provider: authProvider, status: response.status },
+          `Auth ${authAction} failed`,
+        )
+      }
+
+      // Forward response to client
+      reply.status(response.status)
+      response.headers.forEach((value, key) => reply.header(key, value))
+      reply.send(response.body ? await response.text() : null)
+    } catch (error) {
+      request.requestLogger.error(
+        { error, action: authAction, provider: authProvider },
+        `Authentication error during ${authAction}`,
+      )
+      reply.status(500).send({
+        error: 'Internal authentication error',
+        code: 'AUTH_FAILURE',
+      })
+    }
   })
 }

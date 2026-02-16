@@ -1,28 +1,35 @@
-import js from '@eslint/js';
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsparser from '@typescript-eslint/parser';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import baseConfig from '../../eslint.config.js'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 
 export default [
-  js.configs.recommended,
+  ...baseConfig,
   {
     files: ['**/*.ts', '**/*.tsx'],
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+    },
     languageOptions: {
-      parser: tsparser,
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: __dirname,  // This is the key line
+      globals: {
+        window: true,
+        document: true,
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
     rules: {
-      // your rules
+      // React rules
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // Frontend realities
+      'no-console': 'warn',
+
+      // MUST be off for React
+      'toplevel/no-toplevel-side-effect': 'off',
+      'toplevel/no-toplevel-var': 'off',
+      'toplevel/no-toplevel-let': 'off',
     },
   },
-];
+]
