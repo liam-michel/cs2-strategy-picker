@@ -8,6 +8,7 @@ export interface LoginParams {
 export function useLogin() {
   return useMutation({
     mutationFn: async (params: LoginParams) => {
+      console.log(params)
       try {
         const { data, error } = await authClient.signIn.email({
           email: params.email,

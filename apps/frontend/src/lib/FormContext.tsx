@@ -15,6 +15,7 @@ export type FormProps<TSchema extends z.ZodType> = {
   onSubmit: (data: z.output<TSchema>) => Promise<void>
   defaultValues?: DefaultValues<z.input<TSchema>>
 }
+
 export type StringFieldsOf<TSchema extends z.ZodObject<Record<string, any>>> = {
   [K in keyof z.input<TSchema>]: NonNullable<z.input<TSchema>[K]> extends string ? K : never
 }[keyof z.input<TSchema>]
@@ -40,13 +41,13 @@ export type SelectFieldsOf<TSchema extends z.ZodObject<Record<string, any>>> = {
     | z.ZodOptional<z.ZodEnum<any>>
     | z.ZodNullable<z.ZodEnum<any>>
     | z.ZodEnum<any>
-    | z.ZodEnum<any>
     | z.ZodOptional<z.ZodEnum<any>>
     | z.ZodUnion<readonly [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]>
     | z.ZodOptional<z.ZodUnion<readonly [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]>>
     ? K
     : never
 }[keyof TSchema['shape']]
+
 export type BaseFieldProps = {
   label: string
   description?: string
@@ -54,6 +55,10 @@ export type BaseFieldProps = {
   disabled?: boolean
   className?: string
 }
+
+// ---------------------------------------------------------------------------
+// Field Components
+// ---------------------------------------------------------------------------
 
 export function TextField<TSchema extends z.ZodObject<Record<string, any>>>({
   name,
@@ -87,7 +92,7 @@ export function TextField<TSchema extends z.ZodObject<Record<string, any>>>({
           <FormControl>
             <Input
               {...field}
-              value={(field.value as string) ?? ''} // ← add this
+              value={(field.value as string) ?? ''}
               placeholder={placeholder}
               disabled={disabled}
               type={type}
@@ -131,7 +136,7 @@ export function PasswordField<TSchema extends z.ZodObject<Record<string, any>>>(
           <FormControl>
             <Input
               {...field}
-              value={(field.value as string) ?? ''} // ← add this
+              value={(field.value as string) ?? ''}
               placeholder={placeholder}
               disabled={disabled}
               type="password"
@@ -145,7 +150,6 @@ export function PasswordField<TSchema extends z.ZodObject<Record<string, any>>>(
   )
 }
 
-// Textarea Field Component - only accepts string fields
 export function TextAreaField<TSchema extends z.ZodObject<Record<string, any>>>({
   name,
   description,
@@ -165,33 +169,31 @@ export function TextAreaField<TSchema extends z.ZodObject<Record<string, any>>>(
     <FormField
       control={actualForm.control}
       name={name as any}
-      render={({ field }) => {
-        return (
-          <FormItem className={className}>
-            <div className="flex items-center justify-between">
-              <FormLabel>{label}</FormLabel>
-              <Button type="button" variant="ghost" size="sm" onClick={() => actualForm.resetField(name as any)}>
-                Reset
-              </Button>
-            </div>
-            <FormControl>
-              <Textarea
-                {...field}
-                value={(field.value as string) ?? ''}
-                placeholder={placeholder}
-                disabled={disabled}
-                className="min-h-[75px]"
-              />
-            </FormControl>
-            <FormDescription>{description}</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )
-      }}
+      render={({ field }) => (
+        <FormItem className={className}>
+          <div className="flex items-center justify-between">
+            <FormLabel>{label}</FormLabel>
+            <Button type="button" variant="ghost" size="sm" onClick={() => actualForm.resetField(name as any)}>
+              Reset
+            </Button>
+          </div>
+          <FormControl>
+            <Textarea
+              {...field}
+              value={(field.value as string) ?? ''}
+              placeholder={placeholder}
+              disabled={disabled}
+              className="min-h-[75px]"
+            />
+          </FormControl>
+          <FormDescription>{description}</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   )
 }
-// Number Field Component - only accepts number fields
+
 export function NumberField<TSchema extends z.ZodObject<Record<string, any>>>({
   name,
   label,
@@ -239,7 +241,7 @@ export function NumberField<TSchema extends z.ZodObject<Record<string, any>>>({
     />
   )
 }
-// Select Field Component - only accepts enum/union fields
+
 export function SelectField<TSchema extends z.ZodObject<Record<string, any>>, TField extends SelectFieldsOf<TSchema>>({
   name,
   label,
@@ -273,20 +275,13 @@ export function SelectField<TSchema extends z.ZodObject<Record<string, any>>, TF
             </Button>
           </div>
           <FormControl>
-            <Select
-              onValueChange={field.onChange} // ← Simplified!
-              value={String(field.value || '')} // ← Simplified!
-              disabled={disabled}
-            >
+            <Select onValueChange={field.onChange} value={String(field.value || '')} disabled={disabled}>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder || 'Select an option'} />
               </SelectTrigger>
               <SelectContent>
                 {options.map((option) => (
-                  <SelectItem
-                    key={String(option.value)}
-                    value={String(option.value)} // ← Make sure it's a string
-                  >
+                  <SelectItem key={String(option.value)} value={String(option.value)}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -301,7 +296,6 @@ export function SelectField<TSchema extends z.ZodObject<Record<string, any>>, TF
   )
 }
 
-// Checkbox Field Component - only accepts boolean fields
 export function CheckboxField<TSchema extends z.ZodObject<Record<string, any>>>({
   name,
   label,
@@ -325,9 +319,7 @@ export function CheckboxField<TSchema extends z.ZodObject<Record<string, any>>>(
           <FormControl>
             <Checkbox
               checked={!!field.value}
-              onCheckedChange={(checked) => {
-                field.onChange(checked)
-              }}
+              onCheckedChange={(checked) => field.onChange(checked)}
               disabled={disabled}
             />
           </FormControl>
@@ -340,7 +332,6 @@ export function CheckboxField<TSchema extends z.ZodObject<Record<string, any>>>(
   )
 }
 
-// Date Field Component - only accepts Date fields
 export function DateField<TSchema extends z.ZodObject<Record<string, any>>>({
   name,
   label,
@@ -369,9 +360,7 @@ export function DateField<TSchema extends z.ZodObject<Record<string, any>>>({
           <FormControl>
             <DatePicker
               date={field.value ? new Date(field.value as any) : undefined}
-              setDate={(date) => {
-                field.onChange(date)
-              }}
+              setDate={(date) => field.onChange(date)}
               className="w-full"
             />
           </FormControl>
@@ -383,6 +372,10 @@ export function DateField<TSchema extends z.ZodObject<Record<string, any>>>({
   )
 }
 
+// ---------------------------------------------------------------------------
+// SimpleForm
+// ---------------------------------------------------------------------------
+
 export function SimpleForm<
   TInput extends FieldValues,
   TOutput extends FieldValues,
@@ -392,15 +385,11 @@ export function SimpleForm<
   schema,
   onSubmit,
   defaultValues,
-  successMessage,
-  errorMessage,
 }: {
   children: React.ReactNode
   schema: TSchema
   onSubmit: (data: TOutput) => Promise<void>
   defaultValues?: DefaultValues<TInput>
-  successMessage?: string
-  errorMessage?: string
 }) {
   const form = useForm<TInput, any, TOutput>({
     resolver: zodResolver(schema),
@@ -417,4 +406,42 @@ export function SimpleForm<
       </form>
     </Form>
   )
+}
+
+// ---------------------------------------------------------------------------
+// createForm factory
+// ---------------------------------------------------------------------------
+
+export function createForm<TSchema extends z.ZodObject<Record<string, any>>>(schema: TSchema) {
+  return {
+    Form: ({
+      children,
+      onSubmit,
+      defaultValues,
+    }: {
+      children: React.ReactNode
+      onSubmit: (data: z.output<TSchema>) => Promise<void>
+      defaultValues?: DefaultValues<z.input<TSchema>>
+    }) => (
+      <SimpleForm schema={schema} onSubmit={onSubmit} defaultValues={defaultValues}>
+        {children}
+      </SimpleForm>
+    ),
+
+    TextField: (props: Omit<Parameters<typeof TextField<TSchema>>[0], 'form'>) => TextField<TSchema>(props),
+
+    PasswordField: (props: Omit<Parameters<typeof PasswordField<TSchema>>[0], 'form'>) => PasswordField<TSchema>(props),
+
+    TextAreaField: (props: Omit<Parameters<typeof TextAreaField<TSchema>>[0], 'form'>) => TextAreaField<TSchema>(props),
+
+    NumberField: (props: Omit<Parameters<typeof NumberField<TSchema>>[0], 'form'>) => NumberField<TSchema>(props),
+
+    SelectField: <TField extends SelectFieldsOf<TSchema>>(
+      props: Omit<Parameters<typeof SelectField<TSchema, TField>>[0], 'form'>,
+    ) => SelectField<TSchema, TField>(props),
+
+    CheckboxField: (props: Omit<Parameters<typeof CheckboxField<TSchema>>[0], 'form'>) => CheckboxField<TSchema>(props),
+
+    DateField: (props: Omit<Parameters<typeof DateField<TSchema>>[0], 'form'>) => DateField<TSchema>(props),
+  }
 }

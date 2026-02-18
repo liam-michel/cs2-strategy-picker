@@ -1,5 +1,5 @@
 import { useSignup } from '@/hooks/auth/useSignup'
-import { SignupForm } from './SignupForm'
+import { SignUpForm } from './SignupForm'
 import { useNavigate } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -14,7 +14,7 @@ export default function Signup() {
           <CardTitle>Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
-          <SignupForm
+          <SignUpForm
             onSubmit={async (data) => {
               mutate(data, {
                 onSuccess: () => navigate({ to: '/dashboard' }),

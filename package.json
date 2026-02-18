@@ -11,7 +11,14 @@
     "test": "turbo run test",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "db:migrate": "npm run db:migrate -w apps/backend",
+    "db:dev": "turbo run db:dev",
+    "db:test": "turbo run db:test",
+    "db:migratedev": "turbo run db:migratedev",
+    "db:migratetest": "turbo run db:migratetest",
+    "db:studiodev": "turbo run db:studiodev",
+    "db:studiotest": "turbo run db:studiotest",
+    "db:generatedev": "turbo run db:generatedev",
+    "db:generatetest": "turbo run db:generatetest",
     "db:studio": "npm run db:studio -w apps/backend"
   },
   "devDependencies": {

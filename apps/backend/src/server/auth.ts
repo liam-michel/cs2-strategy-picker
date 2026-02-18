@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { prismaAdapter } from "better-auth/adapters/prisma";
+import { prismaAdapter } from 'better-auth/adapters/prisma'
 
 import { DbClient } from '../storage/types'
 
@@ -7,27 +7,23 @@ type BetterAuthDeps = {
   db: DbClient
 }
 
-export type BetterAuth = ReturnType<typeof createBetterAuthSingleton>;
-export function createBetterAuthSingleton(deps: BetterAuthDeps){
+export type BetterAuth = ReturnType<typeof createBetterAuthSingleton>
+export function createBetterAuthSingleton(deps: BetterAuthDeps) {
   const { db } = deps
   return betterAuth({
+    baseURL: 'http://localhost:3000',
+    trustedOrigins: ['http://localhost:5173'],
     database: prismaAdapter(db, {
-      provider: 'postgresql'
+      provider: 'postgresql',
     }),
     user: {
       additionalFields: {
-        username: {
-          type: "string",
-          required: true,
-          // This means the field should be provided during sign-up
-          input: true,
-        },
         role: {
-          type: "string",
+          type: 'string',
           required: false,
-          defaultValue: "USER",
-        }
-      }
+          defaultValue: 'USER',
+        },
+      },
     },
     emailAndPassword: {
       enabled: true,

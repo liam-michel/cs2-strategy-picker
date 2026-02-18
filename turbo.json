@@ -18,6 +18,34 @@
     },
     "type-check": {
       "outputs": []
+    },
+    "db:dev": {
+      "cache": false
+    },
+    "db:test": {
+      "cache": false
+    },
+    "db:migratedev": {
+      "cache": false,
+      "persistent": false
+    },
+    "db:migratetest": {
+      "cache": false,
+      "persistent": false
+    },
+    "db:studiodev": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:studiotest": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:generatedev": {
+      "cache": false
+    },
+    "db:generatetest": {
+      "cache": false
     }
   }
 }

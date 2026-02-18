@@ -8,16 +8,15 @@ import { createStrategyRouter } from './services/strategy/strategy.router.js'
 import { createPrismaClient } from './storage/db-client.js'
 import { createStorage } from './storage/storage.js'
 
-
 export async function setupApp() {
   //instantiate router
   const t = createTRPCRouter()
   //instantiate logger
   const logger = pino({ level: 'info' })
   //database client
-  const dbClient = createPrismaClient('postgresql://invalid:invalid@localhost:5432/invalid')
+  const dbClient = createPrismaClient(process.env.DATABASE_URL!)
   //declare better-auth singleton
-  const auth = createBetterAuthSingleton({db: dbClient})
+  const auth = createBetterAuthSingleton({ db: dbClient })
   //storage object initialized
   const storage = createStorage(dbClient)
   //use-case executor, to be used by all use-cases for consistent error handling
@@ -35,6 +34,6 @@ export async function setupApp() {
     logger,
     storage,
     appRouter,
-    auth
+    auth,
   }
 }

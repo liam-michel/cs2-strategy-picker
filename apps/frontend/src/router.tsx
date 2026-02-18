@@ -9,6 +9,7 @@ import { ModeToggle } from './components/mode-toggle'
 import Signup from './pages/signup/SignUp'
 import Login from './pages/login/Login'
 import { authClient } from './lib/auth-client'
+import { SignOutButton } from './components/signout'
 export interface RouterContext {
   queryClient: QueryClient
 }
@@ -19,6 +20,7 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
       <div className="fixed top-4 right-4 z-50">
         <ModeToggle />
       </div>
+
       <Outlet />
     </>
   ),
@@ -47,21 +49,41 @@ const signUpRoute = createRoute({
   component: Signup,
 })
 
-export const protectedRoute = createRoute({
+const protectedLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: 'dashboard',
-  component: Dashboard,
+  id: 'protected', // ← use id instead of path for pathless layouts
+  component: () => (
+    <>
+      <div className="fixed top-4 left-4 z-50">
+        <SignOutButton />
+      </div>
+      <Outlet />
+    </>
+  ),
   loader: async () => {
-    //auth check with betterauth
     const authResult = await authClient.getSession()
     if (!authResult.data?.session) {
-      redirect({ to: '/login' })
+      throw redirect({ to: '/login' })
     }
   },
 })
+// Dashboard is now a child of the layout, not root
+const dashboardRoute = createRoute({
+  getParentRoute: () => protectedLayoutRoute, // ← parent is layout, not root
+  path: 'dashboard',
+  component: Dashboard,
+})
 
-const routeTree = rootRoute.addChildren([indexRoute, aboutRoute, loginRoute, signUpRoute, protectedRoute])
-
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  aboutRoute,
+  loginRoute,
+  signUpRoute,
+  protectedLayoutRoute.addChildren([
+    // ← layout wraps its children
+    dashboardRoute,
+  ]),
+])
 export const router = createRouter({
   routeTree,
   context: {

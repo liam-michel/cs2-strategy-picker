@@ -11,11 +11,13 @@ export function useSignup() {
   return useMutation({
     mutationFn: async (params: SignUpParams) => {
       try {
+        console.log(params)
         const { data, error } = await authClient.signUp.email({
           email: params.email,
           password: params.password,
           name: params.username,
         })
+        console.log(data, error)
         if (error) throw new Error(error.message ?? 'Signup failed')
         return data
       } catch (e) {

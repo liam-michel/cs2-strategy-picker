@@ -1,20 +1,16 @@
-import { SimpleForm, TextField } from '@/lib/FormContext'
+import { createForm } from '@/lib/FormContext'
 import { z } from 'zod'
-
-export interface LoginFormProps {
-  onSubmit: (data: z.output<typeof LoginFormSchema>) => Promise<void>
-}
 
 const LoginFormSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6).max(20),
 })
 
-export const LoginForm = (props: LoginFormProps) => {
-  return (
-    <SimpleForm schema={LoginFormSchema} onSubmit={props.onSubmit}>
-      <TextField name="emailOrUsername" label="Email or Username" placeholder="Enter your email or username" />
-      <TextField name="password" label="Password" placeholder="Enter your password" type="password" />
-    </SimpleForm>
-  )
-}
+const { Form, TextField, PasswordField } = createForm(LoginFormSchema)
+
+export const LoginForm = ({ onSubmit }: { onSubmit: (data: z.output<typeof LoginFormSchema>) => Promise<void> }) => (
+  <Form onSubmit={onSubmit}>
+    <TextField name="email" label="Email" placeholder="Enter your email" />
+    <PasswordField name="password" label="Password" placeholder="Enter your password" />
+  </Form>
+)
