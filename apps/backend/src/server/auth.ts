@@ -5,14 +5,16 @@ import { DbClient } from '../storage/types'
 
 type BetterAuthDeps = {
   db: DbClient
+  baseURL: string
+  trustedOrigin: string
 }
 
 export type BetterAuth = ReturnType<typeof createBetterAuthSingleton>
 export function createBetterAuthSingleton(deps: BetterAuthDeps) {
-  const { db } = deps
+  const { db, baseURL, trustedOrigin } = deps
   return betterAuth({
-    baseURL: 'http://localhost:3000',
-    trustedOrigins: ['http://localhost:5173'],
+    baseURL,
+    trustedOrigins: [trustedOrigin],
     database: prismaAdapter(db, {
       provider: 'postgresql',
     }),

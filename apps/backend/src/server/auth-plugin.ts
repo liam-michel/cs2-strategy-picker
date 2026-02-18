@@ -3,7 +3,6 @@ import type { Logger } from 'pino'
 
 import type { SafeUser } from '../common/schemas/user'
 import type { Storage } from '../storage/storage'
-import { toHeaders } from '../utils/headers'
 import type { BetterAuth } from './auth'
 declare module 'fastify' {
   interface FastifyRequest {
@@ -26,8 +25,14 @@ export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger; 
   fastify.addHook('preHandler', async (request) => {
     //default user to null
     request.authUser = null
+    // Convert Fastify headers to standard Headers object
+    const headers = new Headers()
+    Object.entries(request.headers).forEach(([key, value]) => {
+      if (value) headers.append(key, value.toString())
+    })
+
     const session = await betterAuth.api.getSession({
-      headers: toHeaders(request.headers),
+      headers: headers,
     })
 
     if (!session) {
