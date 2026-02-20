@@ -377,9 +377,9 @@ export function DateField<TSchema extends z.ZodObject<Record<string, any>>>({
 // ---------------------------------------------------------------------------
 
 export function SimpleForm<
-  TInput extends FieldValues,
-  TOutput extends FieldValues,
-  TSchema extends z.ZodType<TOutput, any, TInput>,
+  TSchema extends z.ZodType,
+  TInput extends FieldValues = z.input<TSchema> & FieldValues,
+  TOutput extends FieldValues = z.output<TSchema> & FieldValues,
 >({
   children,
   schema,
@@ -391,8 +391,8 @@ export function SimpleForm<
   onSubmit: (data: TOutput) => Promise<void>
   defaultValues?: DefaultValues<TInput>
 }) {
-  const form = useForm<TInput, any, TOutput>({
-    resolver: zodResolver(schema),
+  const form = useForm<TInput, unknown, TOutput>({
+    resolver: zodResolver(schema as any) as any,
     defaultValues,
   })
 

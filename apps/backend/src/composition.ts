@@ -44,3 +44,6 @@ export async function setupApp() {
     auth,
   }
 }
+
+type SetupAppReturn = Awaited<ReturnType<typeof setupApp>>
+export type AppRouter = SetupAppReturn['appRouter']

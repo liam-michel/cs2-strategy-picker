@@ -9,6 +9,7 @@ import Login from './pages/login/Login'
 import { authClient } from './lib/auth-client'
 import { SignOutButton } from './components/signout'
 import About from './pages/about/About'
+import UserStrategies from './pages/user-strategies/UserStrategies'
 export interface RouterContext {
   queryClient: QueryClient
 }
@@ -72,7 +73,11 @@ const protectedLayoutRoute = createRoute({
       <div className="fixed top-4 left-4 z-50">
         <SignOutButton />
       </div>
-      <Outlet />
+      <div className="pt-16 px-4">
+        {' '}
+        {/* ← pushes content below the fixed button */}
+        <Outlet />
+      </div>
     </>
   ),
   beforeLoad: redirectIfUnauthenticated,
@@ -84,6 +89,12 @@ const dashboardRoute = createRoute({
   component: () => <div>Dashboard</div>,
 })
 
+const userRoute = createRoute({
+  getParentRoute: () => protectedLayoutRoute,
+  path: 'me',
+  component: UserStrategies,
+})
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   aboutRoute,
@@ -92,6 +103,7 @@ const routeTree = rootRoute.addChildren([
   protectedLayoutRoute.addChildren([
     // ← layout wraps its children
     dashboardRoute,
+    userRoute,
   ]),
 ])
 export const router = createRouter({

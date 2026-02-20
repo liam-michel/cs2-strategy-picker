@@ -1,5 +1,5 @@
 import { useLogin } from '@/hooks/auth/useLogin'
-import { LoginForm } from './LoginForm'
+import { LoginForm } from '../../forms/LoginForm'
 import { useNavigate } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 

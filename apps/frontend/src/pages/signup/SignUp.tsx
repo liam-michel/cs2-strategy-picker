@@ -1,5 +1,5 @@
 import { useSignup } from '@/hooks/auth/useSignup'
-import { SignUpForm } from './SignupForm'
+import { SignUpForm } from '../../forms/SignupForm'
 import { useNavigate } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 

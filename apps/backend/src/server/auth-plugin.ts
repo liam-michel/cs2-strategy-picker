@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
+import fp from 'fastify-plugin'
 import type { Logger } from 'pino'
 
 import type { SafeUser } from '../common/schemas/user'
@@ -10,11 +11,11 @@ declare module 'fastify' {
     requestLogger: Logger
   }
 }
-
-export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger; betterAuth: BetterAuth }> = async (
+const authPluginfn: FastifyPluginAsync<{ storage: Storage; logger: Logger; betterAuth: BetterAuth }> = async (
   fastify,
   { storage, logger, betterAuth },
 ) => {
+  fastify.decorateRequest('authUser', null)
   fastify.addHook('onRequest', async (request) => {
     request.requestLogger = logger.child({
       requestId: request.id,
@@ -116,3 +117,5 @@ export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger; 
     }
   })
 }
+
+export const authPlugin = fp(authPluginfn)

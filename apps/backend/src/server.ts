@@ -25,6 +25,7 @@ async function main() {
     trpcOptions: {
       router: appRouter,
       createContext: ({ req }: { req: FastifyRequest }) => createContext({ request: req, storage }),
+
     },
   })
   fastify.listen({ port: 3000 }, () => logger.info('Server listening on port 3000'))
