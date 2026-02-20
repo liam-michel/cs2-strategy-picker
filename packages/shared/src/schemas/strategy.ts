@@ -13,4 +13,9 @@ export const AddStrategySchema = z.object({
     .max(EconomySchema.options.length, `Economy can have at most ${EconomySchema.options.length} items`),
 })
 
+export const AddStrategyServiceSchema = AddStrategySchema.extend({
+  userId: z.uuid(),
+})
 export type AddStrategyInput = z.output<typeof AddStrategySchema>
+
+export type AddStrategyApplicationInput = z.output<typeof AddStrategyServiceSchema>

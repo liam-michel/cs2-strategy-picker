@@ -1,9 +1,9 @@
-import * as td from 'testdouble'
+import { AddStrategyApplicationInput } from '@cs2monorepo/shared'
 import type { Logger } from 'pino'
+import * as td from 'testdouble'
+
 import { Storage } from '../../../storage/storage'
 import { createStrategyService } from '../strategy.service'
-import { AddStrategyInput } from '../schemas'
-import { Strategy } from '@prisma/client'
 
 const storage = td.object<Storage>()
 const logger = td.object<Logger>()
@@ -12,13 +12,14 @@ const service = createStrategyService(deps)
 
 describe('Notes Service createStrategy', () => {
   it('should create a new strategy', async () => {
-    const inputData: AddStrategyInput = {
+    const inputData: AddStrategyApplicationInput = {
       name: 'Test Strategy',
       description: 'This is a test strategy.',
       map: 'Test Map',
       side: 'T',
       difficulty: 1,
       economy: ['ECO'],
+      userId: 'user-1',
     }
     const expectedStrategy = {
       id: '1',

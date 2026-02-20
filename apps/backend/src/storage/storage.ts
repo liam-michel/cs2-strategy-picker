@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
 import { createStrategyStorage, StrategyStorageMethods } from '../services/strategy/strategy.storage'
 import { createUserStorage, UserStorageMethods } from '../services/user/user.storage'
@@ -22,7 +22,7 @@ export function createStorage(db: PrismaClient): Storage {
   return {
     ...wrapDb(db),
     async transaction(callback) {
-      return db.$transaction(async (tx) => {
+      return db.$transaction(async (tx: Prisma.TransactionClient) => {
         const repo = wrapDb(tx)
         return callback(repo)
       })

@@ -1,15 +1,14 @@
-import { UserRoleSchema } from '@cs2monorepo/shared'
 import { z } from 'zod'
 
 export const SafeUserSchema = z.object({
   id: z.uuid(),
-  username: z.string(),
+  name: z.string(),
   email: z.email(),
-  role: UserRoleSchema,
+  role: z.enum(['USER', 'ADMIN']),
 })
 
 export const AddUserSchema = z.object({
-  username: z.string().min(5).max(20),
+  name: z.string().min(5).max(20),
   email: z.email(),
   password: z.string().min(8).max(30),
 })

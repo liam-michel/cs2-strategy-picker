@@ -59,15 +59,16 @@ model User {
   id            String   @id @default(cuid())
   email         String   @unique
   emailVerified Boolean  @default(false)
-  name          String?
+  name          String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   sessions Session[]
   accounts Account[]
 
-  role     UserRole @default(USER)  // Use the enum instead of String
+  role            UserRole          @default(USER) // Use the enum instead of String
   StrategyComment StrategyComment[]
+  Strategy        Strategy[]
 }
 
 model Session {
@@ -130,6 +131,8 @@ model Utility {
 
 model Strategy {
   id          String @id @default(cuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
   name        String
   description String
 

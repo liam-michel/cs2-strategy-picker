@@ -44,7 +44,7 @@ export const authPlugin: FastifyPluginAsync<{ storage: Storage; logger: Logger; 
     }
     request.authUser = {
       id: dbUser.id,
-      username: dbUser.username,
+      name: dbUser.name,
       email: dbUser.email,
       role: dbUser.role,
     }

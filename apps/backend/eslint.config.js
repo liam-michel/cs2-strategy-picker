@@ -6,6 +6,7 @@ export default [
   ...baseConfig,
   {
     files: ['**/*.ts'],
+    ignores: ['**/*.test.ts', '**/*.spec.ts'],
     plugins: {
       ex,
       toplevel,

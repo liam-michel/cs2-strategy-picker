@@ -3,7 +3,7 @@ import { Logger } from 'pino'
 
 import { createUseCaseExecutor, UseCaseExecutor } from '../common/error/error-utils'
 import type { SafeUser } from '../common/schemas/user'
-import { createServices } from '../services/create-strategies'
+import { createServices } from '../services/create-services.ts'
 import { createStrategyUseCases } from '../services/strategy/strategy.application'
 import { createUserUseCases } from '../services/user/user.application'
 import { Storage } from '../storage/storage'

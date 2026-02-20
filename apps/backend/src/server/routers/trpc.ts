@@ -47,7 +47,7 @@ export function createTRPCRouter() {
 
   const isAdmin = t.middleware(({ ctx, next }) => {
     // Now TypeScript should know ctx.user is User
-    if (!ctx.user || ctx.user.role !== 'admin') {
+    if (!ctx.user || ctx.user.role !== 'ADMIN') {
       throw new Error('Forbidden: Admins only')
     }
     return next()

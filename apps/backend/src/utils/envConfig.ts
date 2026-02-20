@@ -17,7 +17,7 @@ export const parseEnv = (deps: EnvConfigDeps) => {
   const result = envSchema.safeParse(env)
   if (!result.success) {
     //log the error and exit the process
-    logger.error({ errors: result.error.errors }, 'Invalid environment variables')
+    logger.error({ errors: result.error.issues }, 'Invalid environment variables')
     process.exit(1)
   }
   return result.data
