@@ -19,15 +19,15 @@ export const EconomySchema = z.enum(['PISTOL', 'ANTI_ECO', 'ECO', 'FORCE_BUY', '
 export const PlayerRoleSchema = z.enum(['ENTRY', 'SUPPORT', 'LURKER', 'AWPER', 'IGL'])
 export const UtilitySchema = z.enum(['SMOKE', 'FLASH', 'HE_GRENADE', 'MOLOTOV', 'INCENDIARY', 'DECOY'])
 export const MapSchema = z.enum([
-  'DUST_2',
-  'INFERNO',
-  'MIRAGE',
-  'NUKE',
-  'OVERPASS',
-  'VERTIGO',
-  'ANCIENT',
-  'ANUBIS',
-  'TRAIN',
+  'Dust II',
+  'Inferno',
+  'Mirage',
+  'Nuke',
+  'Overpass',
+  'Vertigo',
+  'Ancient',
+  'Anubis',
+  'Train',
 ])
 export const UserRoleSchema = z.enum(['USER', 'ADMIN'])
 

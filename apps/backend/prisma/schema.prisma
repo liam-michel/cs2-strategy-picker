@@ -52,6 +52,7 @@ enum UserRole {
 model Map {
   id         String     @id @default(cuid())
   name       String     @unique
+  isActive  Boolean    @default(true) 
   strategies Strategy[]
 }
 
@@ -143,7 +144,7 @@ model Strategy {
   map      Map               @relation(fields: [mapId], references: [id])
   comments StrategyComment[]
 
-  economies StrategyEconomy[]
+  economy Economy
   utilities Utility[]
 
   ratingAverage Float     @default(0)
@@ -155,14 +156,6 @@ model Strategy {
   @@index([mapId, side])
 }
 
-model StrategyEconomy {
-  strategyId String
-  economy    Economy
-  strategy   Strategy @relation(fields: [strategyId], references: [id])
-
-  @@id([strategyId, economy])
-  @@index([economy])
-}
 
 model StrategyComment {
   id         String   @id @default(cuid())

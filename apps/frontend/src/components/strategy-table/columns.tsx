@@ -1,12 +1,15 @@
-import type { Map, Side } from '@cs2monorepo/shared'
+import type { Economy, Map, Side } from '@cs2monorepo/shared'
 import type { ColumnDef } from '@tanstack/react-table'
+import { RowActions } from '../ui/row-actions'
+
 export type StrategyColumn = {
   id: string
   name: string
   description: string
   side: Side
   difficulty: number
-  map: Map
+  map: string
+  economy: string
 }
 
 export const columns: ColumnDef<StrategyColumn>[] = [
@@ -27,7 +30,20 @@ export const columns: ColumnDef<StrategyColumn>[] = [
     header: 'Difficulty',
   },
   {
+    accessorKey: 'economy',
+    header: 'Economy',
+  },
+  {
     accessorKey: 'map',
     header: 'Map',
+  },
+  {
+    id: 'actions',
+    cell: ({ table, row }) => (
+      <RowActions
+        onEdit={() => table.options.meta?.onEdit(row.original)}
+        onDelete={() => table.options.meta?.onDelete(row.original)}
+      />
+    ),
   },
 ]

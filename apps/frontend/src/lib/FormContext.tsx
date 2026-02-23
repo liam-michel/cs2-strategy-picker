@@ -555,9 +555,13 @@ export function SimpleForm<
     defaultValues,
   })
 
+  const handleSubmit = form.handleSubmit(async (data) => {
+    console.log('Form data before submission:', data)
+    await onSubmit(data)
+  })
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {children}
         <Button type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? 'Submitting...' : 'Submit'}

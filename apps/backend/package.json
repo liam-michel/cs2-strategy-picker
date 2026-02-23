@@ -16,6 +16,8 @@
     "db:studiotest": "bun --env-file .env.test prisma studio",
     "db:generatedev": "bun --env-file .env.dev prisma generate",
     "db:generatetest": "bun --env-file .env.test prisma generate",
+    "db:seeddev": "bun --env-file .env.dev tsx prisma/seed.ts",
+    "db:seedtest": "bun --env-file .env.test tsx prisma/seed.ts",
     "test": "jest"
   },
   "keywords": [],

@@ -32,6 +32,16 @@ export function createStrategyRouter(deps: StrategyRouterDeps) {
         }),
       )
     }),
+
+    editStrategy: protectedProcedure.input(AddStrategySchema.extend(IdSchema.shape)).mutation(({ ctx, input }) => {
+      return ctx.executor.execute(
+        'editStrategy',
+        ctx.useCases.strategy.editStrategy({
+          ...input,
+          userId: ctx.user.id,
+        }),
+      )
+    }),
     softDeleteStrategy: protectedProcedure.input(IdSchema).mutation(({ ctx, input }) => {
       return ctx.executor.execute(
         'softDeleteStrategy',

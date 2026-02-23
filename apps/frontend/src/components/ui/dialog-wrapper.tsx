@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 interface DialogWrapperProps {
   title: string
   description?: string
-  triggerLabel: string
+  triggerLabel?: string
   children: (helpers: { close: () => void }) => React.ReactNode
   error?: string | null
   // Optional controlled props
@@ -48,9 +48,11 @@ export function DialogWrapper({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button>{triggerLabel}</Button>
-      </DialogTrigger>
+      {triggerLabel && (
+        <DialogTrigger asChild>
+          <Button>{triggerLabel}</Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

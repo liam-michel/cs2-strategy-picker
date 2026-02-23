@@ -1,17 +1,24 @@
 import type { AddStrategyApplicationInput, IdInput, PaginationInput } from '@cs2monorepo/shared'
-import type { Strategy } from '@prisma/client'
+import type { Prisma, Strategy } from '@prisma/client'
 
 import type { DbClient } from '../../storage/types'
 
 export type StrategyStorageMethods = {
   getStrategyRaw(data: IdInput): Promise<Strategy | null>
-  getStrategy(data: IdInput): Promise<Strategy | null>
-  getUsersStrategies(data: IdInput): Promise<Strategy[]>
-  getUsersStrategiesPaginated(data: IdInput & PaginationInput): Promise<Strategy[]>
-  createStrategy: (data: AddStrategyApplicationInput) => Promise<Strategy>
+  getStrategy(data: IdInput): Promise<StrategyWithDetails | null>
+  getUsersStrategies(data: IdInput): Promise<StrategyWithDetails[]>
+  getUsersStrategiesPaginated(data: IdInput & PaginationInput): Promise<StrategyWithDetails[]>
+  createStrategy: (data: AddStrategyApplicationInput) => Promise<StrategyWithDetails>
+  editStrategy: (data: AddStrategyApplicationInput & IdInput) => Promise<StrategyWithDetails>
   softDeleteStrategy: (data: IdInput) => Promise<string>
   deleteStrategy: (data: IdInput) => Promise<string>
 }
+
+export type StrategyWithDetails = Prisma.StrategyGetPayload<{
+  include: {
+    map: true
+  }
+}>
 
 function getStrategyRaw(db: DbClient) {
   return async function (data: IdInput): Promise<Strategy | null> {
@@ -22,11 +29,10 @@ function getStrategyRaw(db: DbClient) {
 }
 
 function getStrategy(db: DbClient) {
-  return async function (data: IdInput): Promise<Strategy | null> {
+  return async function (data: IdInput): Promise<StrategyWithDetails | null> {
     return db.strategy.findUnique({
       where: { id: data.id },
       include: {
-        economies: true,
         map: true,
       },
     })
@@ -34,11 +40,10 @@ function getStrategy(db: DbClient) {
 }
 
 function getUsersStrategies(db: DbClient) {
-  return async function (data: IdInput): Promise<Strategy[]> {
+  return async function (data: IdInput): Promise<StrategyWithDetails[]> {
     return db.strategy.findMany({
       where: { userId: data.id },
       include: {
-        economies: true,
         map: true,
       },
     })
@@ -46,12 +51,11 @@ function getUsersStrategies(db: DbClient) {
 }
 
 function getUsersStrategiesPaginated(db: DbClient) {
-  return async function (data: IdInput & PaginationInput): Promise<Strategy[]> {
+  return async function (data: IdInput & PaginationInput): Promise<StrategyWithDetails[]> {
     const { id, page, limit } = data
     return db.strategy.findMany({
       where: { userId: id },
       include: {
-        economies: true,
         map: true,
       },
       skip: (page - 1) * limit,
@@ -60,22 +64,38 @@ function getUsersStrategiesPaginated(db: DbClient) {
   }
 }
 
+function editStrategy(db: DbClient) {
+  return async function (data: AddStrategyApplicationInput & IdInput): Promise<StrategyWithDetails> {
+    return db.strategy.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        description: data.description,
+        map: { connect: { name: data.map } },
+        side: data.side,
+        difficulty: data.difficulty,
+        economy: data.economy,
+      },
+      include: {
+        map: true,
+      },
+    })
+  }
+}
+
 function createStrategy(db: DbClient) {
-  return async function (data: AddStrategyApplicationInput): Promise<Strategy> {
+  return async function (data: AddStrategyApplicationInput): Promise<StrategyWithDetails> {
     return db.strategy.create({
       data: {
         name: data.name,
         description: data.description,
-        mapId: data.map,
+        map: { connect: { name: data.map } },
+        user: { connect: { id: data.userId } },
         side: data.side,
         difficulty: data.difficulty,
-        userId: data.userId,
-        economies: {
-          create: [data.economy].map((economy) => ({ economy })),
-        },
+        economy: data.economy,
       },
       include: {
-        economies: true,
         map: true,
       },
     })
@@ -108,6 +128,7 @@ export function createStrategyStorage(db: DbClient): StrategyStorageMethods {
     getUsersStrategies: getUsersStrategies(db),
     getUsersStrategiesPaginated: getUsersStrategiesPaginated(db),
     createStrategy: createStrategy(db),
+    editStrategy: editStrategy(db),
     softDeleteStrategy: softDeleteStrategy(db),
     deleteStrategy: deleteStrategy(db),
   }

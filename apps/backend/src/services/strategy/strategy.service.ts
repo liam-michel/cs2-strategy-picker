@@ -13,6 +13,7 @@ export type StrategyService = {
     data: IdInput & PaginationInput,
   ) => ReturnType<Repo['strategy']['getUsersStrategiesPaginated']>
   createStrategy: (data: AddStrategyApplicationInput) => ReturnType<Repo['strategy']['createStrategy']>
+  editStrategy: (data: AddStrategyApplicationInput & IdInput) => ReturnType<Repo['strategy']['editStrategy']>
   softDeleteStrategy: (data: IdInput & { userId: string }) => ReturnType<Repo['strategy']['softDeleteStrategy']>
   deleteStrategy: (data: IdInput & { userId: string }) => ReturnType<Repo['strategy']['deleteStrategy']>
 }
@@ -40,6 +41,16 @@ function createStrategy({ storage, logger }: StrategyServiceDeps) {
   return async function (data: AddStrategyApplicationInput) {
     logger.info('Creating a new strategy with data: %o', data)
     const strategy = await storage.strategy.createStrategy(data)
+
+    // future business logic here
+    return strategy
+  }
+}
+
+function editStrategy({ storage, logger }: StrategyServiceDeps) {
+  return async function (data: AddStrategyApplicationInput & IdInput) {
+    logger.info('Editing strategy with id: %o, data: %o', data.id, data)
+    const strategy = await storage.strategy.editStrategy(data)
 
     // future business logic here
     return strategy
@@ -85,6 +96,7 @@ export function createStrategyService(deps: StrategyServiceDeps): StrategyServic
     getUsersStrategies: getUsersStrategies(deps),
     getUsersStrategiesPaginated: getUsersStrategiesPaginated(deps),
     createStrategy: createStrategy(deps),
+    editStrategy: editStrategy(deps),
     softDeleteStrategy: softDeleteStrategy(deps),
     deleteStrategy: deleteStrategy(deps),
   }

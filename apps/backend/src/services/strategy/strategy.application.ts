@@ -30,6 +30,11 @@ export function createStrategyUseCases({ logger, services }: StrategyUseCaseDeps
       logger.info('Use case: Creating strategy with data: %o', data)
       return services.strategy.createStrategy(data)
     },
+
+    editStrategy: async (data: AddStrategyApplicationInput & IdInput) => {
+      logger.info('Use case: Editing strategy with id: %o, data: %o', data.id, data)
+      return services.strategy.editStrategy(data)
+    },
     softDeleteStrategy: async (data: IdInput & { userId: string }) => {
       logger.info('Use case: Soft deleting strategy with id: %o', data)
       return services.strategy.softDeleteStrategy(data)

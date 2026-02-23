@@ -2,6 +2,7 @@ import baseConfig from '../../eslint.config.js'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
+import unusedImports from 'eslint-plugin-unused-imports'
 
 export default [
   ...baseConfig,
@@ -11,6 +12,7 @@ export default [
       react,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
+      'unused-imports': unusedImports,
     },
     languageOptions: {
       globals: {
@@ -30,6 +32,7 @@ export default [
       'toplevel/no-toplevel-side-effect': 'off',
       'toplevel/no-toplevel-var': 'off',
       'toplevel/no-toplevel-let': 'off',
+      'unused-imports/no-unused-imports': 'error',
     },
   },
 ]
