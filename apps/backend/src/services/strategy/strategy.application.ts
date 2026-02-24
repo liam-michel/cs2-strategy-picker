@@ -1,4 +1,4 @@
-import type { AddStrategyApplicationInput, IdInput } from '@cs2monorepo/shared'
+import type { AddStrategyApplicationInput, EditStrategyApplicationInput, IdInput } from '@cs2monorepo/shared'
 import type { PaginationInput } from '@cs2monorepo/shared'
 import type { Logger } from 'pino'
 
@@ -31,7 +31,7 @@ export function createStrategyUseCases({ logger, services }: StrategyUseCaseDeps
       return services.strategy.createStrategy(data)
     },
 
-    editStrategy: async (data: AddStrategyApplicationInput & IdInput) => {
+    editStrategy: async (data: EditStrategyApplicationInput & { userId: string }) => {
       logger.info('Use case: Editing strategy with id: %o, data: %o', data.id, data)
       return services.strategy.editStrategy(data)
     },

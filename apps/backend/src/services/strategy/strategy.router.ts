@@ -1,4 +1,4 @@
-import { IdSchema, PaginationSchema } from '@cs2monorepo/shared'
+import { EditStrategySchema, IdSchema, PaginationSchema } from '@cs2monorepo/shared'
 import { AddStrategySchema } from '@cs2monorepo/shared'
 import { logger } from 'better-auth'
 
@@ -33,7 +33,7 @@ export function createStrategyRouter(deps: StrategyRouterDeps) {
       )
     }),
 
-    editStrategy: protectedProcedure.input(AddStrategySchema.extend(IdSchema.shape)).mutation(({ ctx, input }) => {
+    editStrategy: protectedProcedure.input(EditStrategySchema).mutation(({ ctx, input }) => {
       return ctx.executor.execute(
         'editStrategy',
         ctx.useCases.strategy.editStrategy({

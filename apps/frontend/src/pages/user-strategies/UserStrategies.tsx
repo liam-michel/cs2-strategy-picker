@@ -61,15 +61,7 @@ export default function UserStrategies() {
           {data && data.length > 0 && (
             <DataTable
               columns={columns}
-              data={data.map((strategy) => ({
-                id: strategy.id,
-                name: strategy.name,
-                description: strategy.description,
-                side: strategy.side,
-                difficulty: strategy.difficulty,
-                map: strategy.map.name,
-                economy: strategy.economy,
-              }))}
+              data={data}
               meta={{
                 onEdit: (item) => {
                   setSelectedItem(item)
@@ -99,17 +91,28 @@ export default function UserStrategies() {
                   selectedItem
                     ? {
                         name: selectedItem.name,
-                        description: selectedItem.description,
+                        map: selectedItem.map.name as
+                          | 'Dust II'
+                          | 'Inferno'
+                          | 'Mirage'
+                          | 'Nuke'
+                          | 'Overpass'
+                          | 'Vertigo'
+                          | 'Ancient'
+                          | 'Anubis'
+                          | 'Train',
                         side: selectedItem.side,
+                        description: selectedItem.description,
                         difficulty: selectedItem.difficulty,
-                        map: selectedItem.map,
                         economy: selectedItem.economy,
                       }
                     : undefined
                 }
                 onSubmit={async (data) => {
                   if (!selectedItem) return
-                  createStrategyMutation.mutate(
+                  console.log(data)
+                  console.log(selectedItem.id)
+                  editStrategyMutation.mutate(
                     { ...data, id: selectedItem.id },
                     {
                       onSuccess: () => {

@@ -6,7 +6,7 @@ export const NoteCreateSchema = z.object({
 })
 
 export const IdSchema = z.object({
-  id: z.uuid('Invalid ID format'),
+  id: z.cuid('Invalid ID format'),
 })
 
 export const PaginationSchema = z.object({

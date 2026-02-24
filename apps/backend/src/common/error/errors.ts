@@ -24,3 +24,11 @@ export class ForbiddenError extends DomainError {
 export class InternalServerError extends DomainError {
   readonly code = 'INTERNAL_SERVER_ERROR' as const
 }
+
+export class DatabaseError extends DomainError {
+  readonly code = 'DATABASE_ERROR' as const
+}
+
+export class ConflictError extends DomainError {
+  readonly code = 'CONFLICT' as const
+}

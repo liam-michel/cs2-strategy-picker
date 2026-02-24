@@ -1,4 +1,9 @@
-import type { AddStrategyApplicationInput, IdInput, PaginationInput } from '@cs2monorepo/shared'
+import type {
+  AddStrategyApplicationInput,
+  EditStrategyApplicationInput,
+  IdInput,
+  PaginationInput,
+} from '@cs2monorepo/shared'
 import type { Prisma, Strategy } from '@prisma/client'
 
 import type { DbClient } from '../../storage/types'
@@ -9,7 +14,7 @@ export type StrategyStorageMethods = {
   getUsersStrategies(data: IdInput): Promise<StrategyWithDetails[]>
   getUsersStrategiesPaginated(data: IdInput & PaginationInput): Promise<StrategyWithDetails[]>
   createStrategy: (data: AddStrategyApplicationInput) => Promise<StrategyWithDetails>
-  editStrategy: (data: AddStrategyApplicationInput & IdInput) => Promise<StrategyWithDetails>
+  editStrategy: (data: EditStrategyApplicationInput) => Promise<StrategyWithDetails>
   softDeleteStrategy: (data: IdInput) => Promise<string>
   deleteStrategy: (data: IdInput) => Promise<string>
 }
@@ -65,7 +70,7 @@ function getUsersStrategiesPaginated(db: DbClient) {
 }
 
 function editStrategy(db: DbClient) {
-  return async function (data: AddStrategyApplicationInput & IdInput): Promise<StrategyWithDetails> {
+  return async function (data: EditStrategyApplicationInput): Promise<StrategyWithDetails> {
     return db.strategy.update({
       where: { id: data.id },
       data: {

@@ -1,4 +1,6 @@
 import { initTRPC } from '@trpc/server'
+import superjson from 'superjson'
+import { ZodError } from 'zod'
 
 import { DomainError } from '../../common/error/errors'
 import type { AppContext } from '../context'
@@ -7,6 +9,7 @@ export type createTRPCRouterReturn = ReturnType<typeof createTRPCRouter>
 
 export function createTRPCRouter() {
   const t = initTRPC.context<AppContext>().create({
+    transformer: superjson,
     errorFormatter({ shape, error }) {
       const originalError = error.cause?.cause || error.cause
       if (originalError instanceof DomainError) {
@@ -17,6 +20,16 @@ export function createTRPCRouter() {
             code: originalError.code,
             message: originalError.message,
             stack: process.env.NODE_ENV === 'development' ? originalError.stack : undefined,
+          },
+        }
+      }
+      if (originalError instanceof ZodError) {
+        return {
+          ...shape,
+          message: 'Invalid Input',
+          data: {
+            ...shape.data,
+            code: 'VALIDATION_ERROR',
           },
         }
       }

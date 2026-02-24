@@ -2,6 +2,7 @@ import type { Prisma, PrismaClient } from '@prisma/client'
 
 import { createStrategyStorage, StrategyStorageMethods } from '../services/strategy/strategy.storage'
 import { createUserStorage, UserStorageMethods } from '../services/user/user.storage'
+import { wrapWithErrorHandler } from '../utils/error-utils'
 import type { DbClient } from './types'
 export type Storage = Readonly<{
   strategy: StrategyStorageMethods
@@ -13,8 +14,8 @@ export type Repo = Readonly<Omit<Storage, 'transaction'>>
 
 function wrapDb(db: DbClient): Omit<Storage, 'transaction'> {
   return {
-    strategy: createStrategyStorage(db),
-    user: createUserStorage(db),
+    strategy: wrapWithErrorHandler(createStrategyStorage(db)),
+    user: wrapWithErrorHandler(createUserStorage(db)),
   }
 }
 

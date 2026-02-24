@@ -1,45 +1,24 @@
-import type { Economy, Map, Side } from '@cs2monorepo/shared'
 import type { ColumnDef } from '@tanstack/react-table'
 import { RowActions } from '../ui/row-actions'
+import type { inferProcedureOutput } from '@trpc/server'
+import type { AppRouter } from '../../../../backend/src/composition'
 
-export type StrategyColumn = {
-  id: string
-  name: string
-  description: string
-  side: Side
-  difficulty: number
-  map: string
-  economy: string
-}
+export type StrategyColumn = inferProcedureOutput<AppRouter['strategy']['getUsersStrategies']>[number]
 
 export const columns: ColumnDef<StrategyColumn>[] = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'description', header: 'Description' },
+  { accessorKey: 'side', header: 'Side' },
+  { accessorKey: 'difficulty', header: 'Difficulty' },
+  { accessorKey: 'economy', header: 'Economy' },
   {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description',
-  },
-  {
-    accessorKey: 'side',
-    header: 'Side',
-  },
-  {
-    accessorKey: 'difficulty',
-    header: 'Difficulty',
-  },
-  {
-    accessorKey: 'economy',
-    header: 'Economy',
-  },
-  {
-    accessorKey: 'map',
+    id: 'map',
     header: 'Map',
+    cell: ({ row }) => row.original.map.name, // display transform lives here
   },
   {
     id: 'actions',
-    cell: ({ table, row }) => (
+    cell: ({ row, table }) => (
       <RowActions
         onEdit={() => table.options.meta?.onEdit(row.original)}
         onDelete={() => table.options.meta?.onDelete(row.original)}
