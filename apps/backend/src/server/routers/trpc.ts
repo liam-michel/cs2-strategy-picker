@@ -90,15 +90,16 @@ export function createTRPCRouter() {
 
     if (!result.ok) {
       const error = result.error
-
       if (error.code === 'BAD_REQUEST' && error.cause instanceof ZodError) {
         ctx.logger.warn({ issues: error.cause.issues, code: error.code }, 'input validation failed')
+      } else if (error.code === 'CONFLICT' || error.code === 'NOT_FOUND' || error.code === 'UNAUTHORIZED') {
+        ctx.logger.warn({ err: error, code: error.code }, 'procedure failed')
       } else {
         ctx.logger.error({ err: error, code: error.code }, 'procedure failed')
       }
     }
 
-    return result // always return it, even on error
+    return result
   })
   const publicProcedure = baseProcedure
   const protectedProcedure = baseProcedure.use(isAuthed)

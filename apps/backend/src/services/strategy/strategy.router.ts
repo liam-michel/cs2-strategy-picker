@@ -1,6 +1,5 @@
 import { EditStrategySchema, IdSchema, PaginationSchema } from '@cs2monorepo/shared'
 import { AddStrategySchema } from '@cs2monorepo/shared'
-import { logger } from 'better-auth'
 
 import type { createTRPCRouterReturn } from '../../server/routers/trpc'
 type StrategyRouterDeps = {
@@ -12,7 +11,6 @@ export function createStrategyRouter(deps: StrategyRouterDeps) {
   const { router, protectedProcedure } = t
   return router({
     getUsersStrategies: protectedProcedure.query(({ ctx }) => {
-      logger.info(`User ${ctx.user.id} is fetching their strategies`)
       return ctx.executor.execute('getUsersStrategies', ctx.useCases.strategy.getUsersStrategies({ id: ctx.user.id }))
     }),
     getUsersStrategiesPaginated: protectedProcedure
@@ -34,7 +32,6 @@ export function createStrategyRouter(deps: StrategyRouterDeps) {
     }),
 
     editStrategy: protectedProcedure.input(EditStrategySchema).mutation(({ ctx, input }) => {
-      logger.info(`User ${ctx.user.id} is editing strategy ${input.id}`)
       return ctx.executor.execute(
         'editStrategy',
         ctx.useCases.strategy.editStrategy({

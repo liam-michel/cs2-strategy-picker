@@ -137,7 +137,7 @@ model Strategy {
   id          String @id @default(uuid())
   userId      String
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String @unique
+  name        String 
   description String
 
   side       Side
@@ -156,6 +156,7 @@ model Strategy {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
+  @@unique([name, userId])
   @@index([mapId, side])
 }
 
