@@ -570,6 +570,7 @@ export function SimpleForm<
     try {
       await onSubmit(data)
     } catch (err: any) {
+      console.log(err)
       const fieldErrors = err?.data?.fieldErrors
       if (fieldErrors) {
         Object.entries(fieldErrors).forEach(([field, message]) => {

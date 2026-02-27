@@ -1,7 +1,7 @@
 export abstract class DomainError extends Error {
   abstract readonly code: string
-  constructor(message: string) {
-    super(message)
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options)
     this.name = this.constructor.name
   }
 }
@@ -25,16 +25,13 @@ export class InternalServerError extends DomainError {
   readonly code = 'INTERNAL_SERVER_ERROR' as const
 }
 
-export class DatabaseError extends DomainError {
-  readonly code = 'DATABASE_ERROR' as const
-}
-
 export class ConflictError extends DomainError {
   readonly code = 'CONFLICT' as const
   constructor(
     message: string,
     public readonly fields?: string[],
+    options?: { cause?: unknown },
   ) {
-    super(message)
+    super(message, options)
   }
 }

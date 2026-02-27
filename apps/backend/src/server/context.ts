@@ -1,7 +1,7 @@
 import type { FastifyRequest } from 'fastify'
 import { Logger } from 'pino'
 
-import { createUseCaseExecutor, UseCaseExecutor } from '../common/error/error-utils'
+import { createUseCaseExecutor, UseCaseExecutor } from '../common/error/useCaseExecutor'
 import type { SafeUser } from '../common/schemas/user'
 import { createServices } from '../services/create-services.ts'
 import { createStrategyUseCases } from '../services/strategy/strategy.application'
