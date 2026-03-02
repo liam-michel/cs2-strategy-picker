@@ -1,4 +1,4 @@
-import { EditStrategySchema, IdSchema, PaginationSchema } from '@cs2monorepo/shared'
+import { EditStrategySchema, IdSchema, SearchSchema } from '@cs2monorepo/shared'
 import { AddStrategySchema } from '@cs2monorepo/shared'
 
 import type { createTRPCRouterReturn } from '../../server/routers/trpc'
@@ -13,14 +13,12 @@ export function createStrategyRouter(deps: StrategyRouterDeps) {
     getUsersStrategies: protectedProcedure.query(({ ctx }) => {
       return ctx.executor.execute('getUsersStrategies', ctx.useCases.strategy.getUsersStrategies({ id: ctx.user.id }))
     }),
-    getUsersStrategiesPaginated: protectedProcedure
-      .input(IdSchema.extend(PaginationSchema.shape))
-      .query(({ ctx, input }) => {
-        return ctx.executor.execute(
-          'getUsersStrategiesPaginated',
-          ctx.useCases.strategy.getUsersStrategiesPaginated(input),
-        )
-      }),
+    getUsersStrategiesPaginated: protectedProcedure.input(SearchSchema).query(({ ctx, input }) => {
+      return ctx.executor.execute(
+        'getUsersStrategiesPaginated',
+        ctx.useCases.strategy.getUsersStrategiesPaginated({ ...input, id: ctx.user.id }),
+      )
+    }),
     createStrategy: protectedProcedure.input(AddStrategySchema).mutation(({ ctx, input }) => {
       return ctx.executor.execute(
         'createStrategy',

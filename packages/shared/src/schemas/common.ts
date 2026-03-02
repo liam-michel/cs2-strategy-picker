@@ -33,11 +33,15 @@ export const MapSchema = z.enum(
 )
 export const UserRoleSchema = z.enum(['USER', 'ADMIN'], 'User role must be either USER or ADMIN')
 
+export const SearchSchema = z
+  .object({
+    query: z.string().max(255, 'Search query must be at most 255 characters').optional().nullable(),
+  })
+  .extend(PaginationSchema.shape)
+
 export type IdInput = z.input<typeof IdSchema>
 
 export type NoteCreateInput = z.output<typeof NoteCreateSchema>
-
-export type PaginationInput = z.output<typeof PaginationSchema>
 
 export type Side = z.output<typeof SideSchema>
 export type Economy = z.output<typeof EconomySchema>
@@ -45,3 +49,4 @@ export type PlayerRole = z.output<typeof PlayerRoleSchema>
 export type Utility = z.output<typeof UtilitySchema>
 export type UserRole = z.output<typeof UserRoleSchema>
 export type Map = z.output<typeof MapSchema>
+export type SearchInput = z.output<typeof SearchSchema>

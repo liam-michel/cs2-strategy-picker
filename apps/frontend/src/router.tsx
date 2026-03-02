@@ -7,9 +7,14 @@ import { ModeToggle } from './components/mode-toggle'
 import Signup from './pages/signup/SignUp'
 import Login from './pages/login/Login'
 import { authClient } from './lib/auth-client'
-import { SignOutButton } from './components/signout'
 import About from './pages/about/About'
 import UserStrategies from './pages/user-strategies/UserStrategies'
+import { MainLayout } from './layouts/MainLayout'
+export interface User {
+  id: string
+  name: string
+  email: string
+}
 export interface RouterContext {
   queryClient: QueryClient
 }
@@ -21,10 +26,18 @@ const redirectIfAuthenticated = async () => {
   }
 }
 
-const redirectIfUnauthenticated = async () => {
+const redirectIfUnauthenticated = async (): Promise<{ user: User }> => {
   const authResult = await authClient.getSession()
   if (!authResult.data?.session) {
     throw redirect({ to: '/login' })
+  }
+  const contextUser: User = {
+    id: authResult.data.user.id,
+    name: authResult.data.user.name || '',
+    email: authResult.data.user.email || '',
+  }
+  return {
+    user: contextUser as User,
   }
 }
 
@@ -67,19 +80,8 @@ const signUpRoute = createRoute({
 
 const protectedLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: 'protected', // ← use id instead of path for pathless layouts
-  component: () => (
-    <>
-      <div className="fixed top-4 left-4 z-50">
-        <SignOutButton />
-      </div>
-      <div className="pt-16 px-4">
-        {' '}
-        {/* ← pushes content below the fixed button */}
-        <Outlet />
-      </div>
-    </>
-  ),
+  id: 'protected',
+  component: MainLayout,
   beforeLoad: redirectIfUnauthenticated,
 })
 // Dashboard is now a child of the layout, not root
@@ -113,6 +115,7 @@ export const router = createRouter({
   },
 })
 
+export { rootRoute, protectedLayoutRoute }
 declare module '@tanstack/react-router' {
   export interface RegisterRouter {
     router: typeof router

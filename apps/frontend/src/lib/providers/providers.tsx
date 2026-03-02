@@ -4,12 +4,15 @@ import { ThemeProvider } from './theme-provider'
 import { trpc } from './trpc'
 import { trpcClient } from './trpc'
 import { Toaster } from 'sonner'
+import { NuqsAdapter } from 'nuqs/adapters/react'
 function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-        <Toaster />
+        <NuqsAdapter>
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <Toaster />
+        </NuqsAdapter>
       </trpc.Provider>
     </ThemeProvider>
   )

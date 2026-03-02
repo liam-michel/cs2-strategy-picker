@@ -2,7 +2,7 @@ import type {
   AddStrategyApplicationInput,
   EditStrategyApplicationInput,
   IdInput,
-  PaginationInput,
+  SearchInput,
 } from '@cs2monorepo/shared'
 import { DatabaseError } from 'pg'
 import type { Logger } from 'pino'
@@ -18,7 +18,7 @@ export type StrategyServiceDeps = {
 export type StrategyService = {
   getUsersStrategies: (data: IdInput) => ReturnType<Repo['strategy']['getUsersStrategies']>
   getUsersStrategiesPaginated: (
-    data: IdInput & PaginationInput,
+    data: IdInput & SearchInput,
   ) => ReturnType<Repo['strategy']['getUsersStrategiesPaginated']>
   createStrategy: (data: AddStrategyApplicationInput) => ReturnType<Repo['strategy']['createStrategy']>
   editStrategy: (data: AddStrategyApplicationInput & IdInput) => ReturnType<Repo['strategy']['editStrategy']>
@@ -33,7 +33,7 @@ function getUsersStrategies({ storage }: StrategyServiceDeps) {
 }
 
 function getUsersStrategiesPaginated({ storage }: StrategyServiceDeps) {
-  return async function (data: IdInput & PaginationInput) {
+  return async function (data: IdInput & SearchInput) {
     return storage.strategy.getUsersStrategiesPaginated(data)
   }
 }

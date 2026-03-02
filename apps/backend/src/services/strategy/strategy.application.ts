@@ -1,5 +1,5 @@
 import type { AddStrategyApplicationInput, EditStrategyApplicationInput, IdInput } from '@cs2monorepo/shared'
-import type { PaginationInput } from '@cs2monorepo/shared'
+import type { SearchInput } from '@cs2monorepo/shared'
 import type { Logger } from 'pino'
 
 import { Services } from '../create-services.ts'
@@ -18,7 +18,7 @@ export function createStrategyUseCases({ logger, services }: StrategyUseCaseDeps
       log.info('Fetching strategies')
       return services.strategy.getUsersStrategies(data)
     },
-    getUsersStrategiesPaginated: async (data: IdInput & PaginationInput) => {
+    getUsersStrategiesPaginated: async (data: IdInput & SearchInput) => {
       log.info('Fetching paginated strategies with data: %o', data)
       return services.strategy.getUsersStrategiesPaginated(data)
     },

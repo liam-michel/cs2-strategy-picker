@@ -1,129 +1,83 @@
-import { columns, StrategyColumn } from '../../components/strategy-table/columns'
-import { DataTable } from '@/components/ui/data-table'
-import { StrategyForm } from '@/forms/StrategyForm'
-import { DialogWrapper } from '@/components/ui/dialog-wrapper'
-import { toast } from 'sonner'
-import { trpc } from '@/lib/providers/trpc'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import useFormOpen from '@/hooks/ui/useFormOpen'
 import { useState } from 'react'
-import { DeleteForm } from '@/forms/DeleteForm'
-import { Map } from '@cs2monorepo/shared'
-
-export default function UserStrategies() {
-  const { data, error, isLoading } = trpc.strategy.getUsersStrategies.useQuery()
-  const createStrategyMutation = trpc.strategy.createStrategy.useMutation()
-  const editStrategyMutation = trpc.strategy.editStrategy.useMutation()
-  const deleteStrategyMutation = trpc.strategy.deleteStrategy.useMutation()
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { SearchBar } from '@/components/SearchBar'
+import { StrategiesTable } from './tables/StrategiesTable'
+import { CreateStrategyDialog } from './dialogs/CreateStrategyDialog'
+import { EditStrategyDialog } from './dialogs/EditStrategyDialog'
+import { DeleteStrategyDialog } from './dialogs/DeleteStrategyDialog'
+import { trpc } from '@/lib/providers/trpc'
+import { StrategyColumn } from '../../components/strategy-table/columns'
+import { useQueryParams } from '@/hooks/useQueryParams'
+import { useCurrentUser } from '@/lib/providers/AuthContext'
+export default function UserStrategiesPage() {
+  const user = useCurrentUser()
+  const params = useQueryParams()
+  const { query, page, limit } = params.params
+  const { setParams } = params
+  const { data, error, isLoading } = trpc.strategy.getUsersStrategiesPaginated.useQuery({
+    query,
+    page,
+    limit,
+  })
+  const [selectedItem, setSelectedItem] = useState<StrategyColumn | null>(null)
+  const [isEditOpen, setEditOpen] = useState(false)
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
 
   const utils = trpc.useUtils()
-  const revalidate = () => utils.strategy.getUsersStrategies.invalidate()
+  const revalidate = () => utils.strategy.getUsersStrategiesPaginated.invalidate()
 
-  //form opening closing state for the edit/delete
-  const { isOpen: isEditOpen, openForm: openEditForm, closeForm: closeEditForm } = useFormOpen()
-  const { isOpen: isDeleteOpen, openForm: openDeleteForm, closeForm: closeDeleteForm } = useFormOpen()
-  const [selectedItem, setSelectedItem] = useState<StrategyColumn | null>(null)
-
-  if (error) {
-    return <div>Error loading strategies: {error.message}</div>
-  }
+  if (error) return <div>Error loading strategies: {error.message}</div>
 
   return (
     <div className="flex justify-center items-start min-h-screen p-8">
       <Card className="w-full max-w-5xl">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>My Strategies</CardTitle>
-          <DialogWrapper
-            title="Create New Strategy"
-            description="Fill out the form below to create a new strategy."
-            triggerLabel="Create Strategy"
-          >
-            {({ close }) => (
-              <StrategyForm
-                onSubmit={async (data) => {
-                  await createStrategyMutation.mutateAsync(data)
-                  revalidate()
-                  close()
-                }}
-              />
-            )}
-          </DialogWrapper>
+          <CardTitle>{user.name} Strategies</CardTitle>
+          <SearchBar
+            onSubmit={(val) => setParams({ ...params.params, query: val })}
+            placeholder="Search your strategies..."
+            className="max-w-sm"
+          />
+          <CreateStrategyDialog onSuccess={revalidate} />
         </CardHeader>
+
         <CardContent>
-          {isLoading ? (
-            <div>Loading...</div>
-          ) : data?.length === 0 ? (
-            <div>You have no strategies yet. Create one to get started!</div>
-          ) : null}
+          {isLoading && <div>Loading...</div>}
+          {data && data.length === 0 && (
+            <div>You have no strategies matching this query. Create one to get started!</div>
+          )}
+
           {data && data.length > 0 && (
-            <DataTable
-              columns={columns}
+            <StrategiesTable
               data={data}
-              meta={{
-                onEdit: (item) => {
-                  setSelectedItem(item)
-                  openEditForm()
-                },
-                onDelete: (item) => {
-                  setSelectedItem(item)
-                  openDeleteForm()
-                },
+              onEdit={(item) => {
+                setSelectedItem(item)
+                setEditOpen(true)
+              }}
+              onDelete={(item) => {
+                setSelectedItem(item)
+                setDeleteOpen(true)
               }}
             />
           )}
-          <DialogWrapper
-            title="Edit Strategy"
-            description="Update the fields below to edit your strategy."
-            open={isEditOpen}
-            onOpenChange={(open) => {
-              if (!open) {
-                setSelectedItem(null)
-                closeEditForm()
-              }
-            }}
-          >
-            {({ close }) => (
-              <StrategyForm
-                initialData={
-                  selectedItem
-                    ? {
-                        name: selectedItem.name,
-                        map: selectedItem.map.name as Map,
-                        side: selectedItem.side,
-                        description: selectedItem.description,
-                        difficulty: selectedItem.difficulty,
-                        economy: selectedItem.economy,
-                      }
-                    : undefined
-                }
-                onSubmit={async (data) => {
-                  if (!selectedItem) return
-                  await editStrategyMutation.mutateAsync({ ...data, id: selectedItem.id })
-                  revalidate()
-                  close()
-                }}
-              />
-            )}
-          </DialogWrapper>
-          <DeleteForm
-            title="Delete Strategy"
-            description="Are you sure you want to delete this strategy? This action cannot be undone."
-            open={isDeleteOpen}
-            onOpenChange={closeDeleteForm}
-            onConfirm={async () => {
-              if (!selectedItem) return
-              deleteStrategyMutation.mutate(
-                { id: selectedItem.id },
-                {
-                  onSuccess: () => {
-                    revalidate()
-                    closeDeleteForm()
-                  },
-                  onError: (err) => toast.error(err.message),
-                },
-              )
-            }}
-          />
+
+          {selectedItem && (
+            <EditStrategyDialog
+              strategy={selectedItem}
+              open={isEditOpen}
+              onOpenChange={setEditOpen}
+              onSuccess={() => setSelectedItem(null)}
+            />
+          )}
+
+          {selectedItem && (
+            <DeleteStrategyDialog
+              strategy={selectedItem}
+              open={isDeleteOpen}
+              onOpenChange={setDeleteOpen}
+              onSuccess={() => setSelectedItem(null)}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
