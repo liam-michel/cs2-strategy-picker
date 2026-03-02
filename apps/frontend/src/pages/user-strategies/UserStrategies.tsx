@@ -6,7 +6,7 @@ import { CreateStrategyDialog } from './dialogs/CreateStrategyDialog'
 import { EditStrategyDialog } from './dialogs/EditStrategyDialog'
 import { DeleteStrategyDialog } from './dialogs/DeleteStrategyDialog'
 import { trpc } from '@/lib/providers/trpc'
-import { StrategyColumn } from '../../components/strategy-table/columns'
+import { StrategyColumn } from './tables/columns'
 import { useQueryParams } from '@/hooks/useQueryParams'
 import { useCurrentUser } from '@/lib/providers/AuthContext'
 export default function UserStrategiesPage() {

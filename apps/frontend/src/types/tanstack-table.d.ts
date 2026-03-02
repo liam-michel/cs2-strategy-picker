@@ -3,8 +3,8 @@ import type { RowData } from '@tanstack/react-table'
 
 declare module '@tanstack/react-table' {
   export interface TableMeta<TData extends RowData> {
-    onEdit: (id: TData) => void
-    onDelete: (id: TData) => void
-    onView: (id: TData) => void
+    onEdit?: (id: TData) => void
+    onDelete?: (id: TData) => void
+    onView?: (id: TData) => void
   }
 }

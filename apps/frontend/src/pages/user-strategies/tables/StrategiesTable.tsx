@@ -1,5 +1,5 @@
 import { DataTable } from '@/components/ui/data-table'
-import { columns, StrategyColumn } from '../../../components/strategy-table/columns'
+import { columns, StrategyColumn } from '../tables/columns'
 import { useNavigate } from '@tanstack/react-router'
 
 interface Props {

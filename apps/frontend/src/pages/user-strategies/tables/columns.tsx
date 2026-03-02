@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import { RowActions } from '../ui/row-actions'
+import { RowActions } from '@/components/ui/row-actions'
 import type { inferProcedureOutput } from '@trpc/server'
-import type { AppRouter } from '../../../../backend/src/composition'
+import type { AppRouter } from '../../../../../backend/src/composition'
 
 export type StrategyColumn = inferProcedureOutput<AppRouter['strategy']['getUsersStrategies']>[number]
 
@@ -20,8 +20,8 @@ export const columns: ColumnDef<StrategyColumn>[] = [
     id: 'actions',
     cell: ({ row, table }) => (
       <RowActions
-        onEdit={() => table.options.meta?.onEdit(row.original)}
-        onDelete={() => table.options.meta?.onDelete(row.original)}
+        onEdit={() => table.options.meta?.onEdit?.(row.original)}
+        onDelete={() => table.options.meta?.onDelete?.(row.original)}
       />
     ),
   },
